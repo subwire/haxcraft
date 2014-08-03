@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import sqlite3,sys,os,re,datetime,hashlib
 
 def hashfile(filepath):
@@ -9,9 +10,9 @@ def hashfile(filepath):
         f.close()
     return md5.hexdigest()
 
-dbfile = sys.argv[1]
-modsfolder = sys.argv[2]
-prefix = sys.argv[3]
+dbfile = /home/eric/solder/
+modsfolder = /home/eric/haxcraft/mods
+prefix = ""
 modverRE = re.compile(r"(\w+)\-(\S+)\.zip")
 
 dbconn = sqlite3.connect(dbfile)
@@ -22,7 +23,6 @@ for dir in dirs:
    for modfile in os.listdir(os.path.join(modsfolder,dir)):
       modver_match = modverRE.match(modfile)
       if modver_match:
-         print "Found mod ", modver_match.group(1),modver_match.group(2)
          hash = hashfile(os.path.join(modsfolder,dir,modfile))
          modvers.append((modver_match.group(1),modver_match.group(2),hash))
 curmodvers = []
@@ -56,9 +56,9 @@ for slug,ver,hash in newmods:
    verrow = dbconn.execute("SELECT count(*) from main." + prefix + "modversions where mod_id = ? and version = ? and md5 = ?;",[mod_id,ver,hash])
    for (count) in verrow:
       if int(count[0]) > 0:
-         print "Duplicate mod found, not inserting"
+         pass
       else:
-         print "Inserting new version of ", str(mod_id) 
+         print "Inserting new version of ", str(slug) 
          dbconn.execute("INSERT INTO main." + prefix + "modversions values (NULL,?,?,?,?,?);",[mod_id,ver,hash,datetime.datetime.now(),datetime.datetime.now()]) 
 
 dbconn.commit()
